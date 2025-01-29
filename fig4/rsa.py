@@ -19,6 +19,7 @@ from distance import pearson_correlation
 def calculate_rdm(
     activations: Array,
     dissimilarity_measure: Callable[[Array, Array], Array],
+    return_full: bool = False,
 ) -> Array:
     """Compute representational dissimilarities for `activations`."""
     compute_pairwise_distances = jax.vmap(
@@ -26,10 +27,11 @@ def calculate_rdm(
         in_axes=(None, 0),
     )
 
-    # Extract the upper triangular of the RDM.
     rdm_full = compute_pairwise_distances(activations, activations)
-    rdm_triu = rdm_full[jnp.triu_indices_from(rdm_full, k=1)]
+    if return_full:
+        return rdm_full
 
+    rdm_triu = rdm_full[jnp.triu_indices_from(rdm_full, k=1)]
     return rdm_triu
 
 
