@@ -54,10 +54,18 @@ def add_random_zero_neurons(
     return new_w_in, new_w_out
 
 
+# TODO: linear reconstruction for linear nets
+# not function-preserving for nonlinear nets.
+# def add_linear_reconstruction
+# mapping, *_ = jnp.linalg.lstsq(preacts, pattern)
+# etched_w_in, *_ = jnp.linalg.lstsq(w_in, mapping)
+# etched_w_in = etched_w_in.T
+
+
 def add_phantom_zero_neurons(
     w_in: Float[Array, "hidden in"],
     w_out: Float[Array, "out hidden"],
-    preacts: Float[Array, "batch hidden"],
+    inputs: Float[Array, "batch hidden"],
     pattern: Float[Array, "batch pattern"],
 ) -> tuple[Float[Array, "hidden in"], Float[Array, "out hidden"]]:
     """Add zero-type neurons to create a phantom pattern over preactivations."""
@@ -65,8 +73,7 @@ def add_phantom_zero_neurons(
     out_dim, _ = w_out.shape
     _, phantom_dim = pattern.shape
 
-    mapping, *_ = jnp.linalg.lstsq(preacts, pattern)
-    phantom_w_in, *_ = jnp.linalg.lstsq(w_in, mapping)
+    phantom_w_in, *_ = jnp.linalg.lstsq(inputs, pattern)
     phantom_w_in = phantom_w_in.T
     phantom_w_out = jnp.zeros((out_dim, phantom_dim))
 
