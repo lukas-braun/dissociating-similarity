@@ -19,13 +19,28 @@ def scale_neurons(
 def duplicate_neurons(
     w_in: Float[Array, "hidden in"],
     w_out: Float[Array, "out hidden"],
-    num_duplicates: int = 5,
+    duplicate_multiplier: float = 1.2,
 ) -> tuple[Float[Array, "hidden in"], Float[Array, "out hidden"]]:
     """Add duplicate-type neurons per Simsek et al. (2021)."""
     hidden_dim, in_dim = w_in.shape
     out_dim, _ = w_out.shape
-    w_in_dup = jnp.repeat(w_in, num_duplicates, axis=0)
-    w_out_dup = jnp.repeat(w_out / num_duplicates, num_duplicates, axis=1)
+
+    int_dups = int(duplicate_multiplier)
+    frac_neurons = int((duplicate_multiplier % 1) * hidden_dim)
+
+    w_in_dup = jnp.repeat(w_in, int_dups, axis=0)
+    w_out_dup = jnp.repeat(w_out, int_dups, axis=1)
+    if frac_neurons > 0:
+        w_in_dup = jnp.concatenate([w_in_dup, w_in[:frac_neurons]], axis=0)
+        w_out_dup = jnp.concatenate([w_out_dup, w_out[:, :frac_neurons]], axis=1)
+
+    scale = jnp.ones(hidden_dim) * int_dups
+    scale = scale.at[:frac_neurons].add(1)
+    scale = jnp.repeat(scale, int_dups)
+    if frac_neurons > 0:
+        scale = jnp.concatenate([scale, scale[:frac_neurons]])
+    w_out_dup = w_out_dup / scale[None, :]
+
     return w_in_dup, w_out_dup
 
 
