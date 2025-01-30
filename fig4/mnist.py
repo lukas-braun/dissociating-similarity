@@ -258,8 +258,9 @@ def train_mnist(
         f"Epoch {epoch}\t\ttrain loss: {loss_mean:.3g} ± {loss_std:.3g}\ttest error: {error_mean*100:.4g}%"
     )
 
-    if result != optx.RESULTS.successful:
-        print("Optimization failed!")
+    # TODO: Adapt to multi-dim case
+    # if result != optx.RESULTS.successful:
+    #    print("Optimization failed!")
 
     params, _, _ = postprocess(params, static, X, y, state, result)
     model = eqx.combine(params, static)
