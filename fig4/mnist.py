@@ -10,6 +10,7 @@ import jax.numpy as jnp
 import optimistix as optx
 import optax
 import numpy as np
+from functools import partial
 
 
 _DATA = "/tmp/jax_example_data/"
@@ -103,7 +104,101 @@ def batch_objective(params, args):
     return objective_value, None
 
 
-def train_mnist(num_epochs=30):
+@partial(eqx.filter_vmap, in_axes=(eqx.if_array(0), None))
+@partial(eqx.filter_vmap, in_axes=(None, 0))
+def predict(model, X):
+    return model(X)
+
+
+@eqx.filter_vmap
+def create_model(key):
+    # TODO use param_scale = 0.1
+    model = eqx.nn.MLP(
+        in_size=784,  # 28 * 28
+        width_size=1024,
+        out_size=10,
+        depth=2,
+        activation=jax.nn.relu,
+        use_bias=False,
+        use_final_bias=False,
+        key=key,
+    )
+    return model
+
+
+def create_optimizer(num_steps):
+    # encapsulate optimistix boilerplate
+    optimizer = optx.OptaxMinimiser(
+        optax.sgd(
+            learning_rate=optax.linear_schedule(
+                init_value=1e-1,
+                end_value=1e-6,
+                transition_steps=num_steps,
+            )
+        ),
+        rtol=1e-4,
+        atol=1e-4,
+    )
+    options = None
+    f_struct = jax.ShapeDtypeStruct((), jnp.float32)
+    tags = frozenset()
+
+    @partial(eqx.filter_vmap, in_axes=(0, None, None, None))
+    def init(params, static, X, y):
+        return optimizer.init(
+            fn=batch_objective,
+            y=params,
+            args=(static, X, y),
+            options=options,
+            f_struct=f_struct,
+            aux_struct=None,
+            tags=tags,
+        )
+
+    @partial(eqx.filter_vmap, in_axes=(0, None, None, None, 0))
+    def step(params, static, X, y, state):
+        return optimizer.step(
+            fn=batch_objective,
+            y=params,
+            args=(static, X, y),
+            options=options,
+            state=state,
+            tags=tags,
+        )
+
+    @partial(eqx.filter_vmap, in_axes=(0, None, None, None, 0))
+    def terminate(params, static, X, y, state):
+        return optimizer.terminate(
+            fn=batch_objective,
+            y=params,
+            args=(static, X, y),
+            options=options,
+            state=state,
+            tags=tags,
+        )
+
+    @partial(eqx.filter_vmap, in_axes=(0, None, None, None, 0, 0))
+    def postprocess(params, static, X, y, state, result):
+        return optimizer.postprocess(
+            fn=batch_objective,
+            aux=None,
+            y=params,
+            args=(static, X, y),
+            options=options,
+            state=state,
+            result=result,
+            tags=tags,
+        )
+
+    return init, step, terminate, postprocess
+
+
+def train_mnist(
+    *,
+    num_epochs: int = 30,
+    num_seeds: int = 10,
+    key=jax.random.PRNGKey(37),
+):
     train_images, train_labels, test_images, test_labels = mnist_data()
     batch_size = 128
     num_train = train_images.shape[0]
@@ -120,74 +215,53 @@ def train_mnist(num_epochs=30):
 
     batches = data_stream()
 
-    # TODO use param_scale = 0.1
-    model = eqx.nn.MLP(
-        in_size=784,  # 28 * 28
-        width_size=1024,
-        out_size=10,
-        depth=2,
-        activation=jax.nn.relu,
-        use_bias=False,
-        use_final_bias=False,
-        key=jax.random.PRNGKey(0),
-    )
-
-    optimizer = optx.OptaxMinimiser(
-        optax.sgd(
-            learning_rate=optax.linear_schedule(
-                init_value=1e-1,
-                end_value=1e-6,
-                transition_steps=num_epochs * num_batches,
-            )
-        ),
-        rtol=1e-4,
-        atol=1e-4,
-    )
-    options = None
-    f_struct = jax.ShapeDtypeStruct((), jnp.float32)
-    tags = frozenset()
-
-    init = eqx.Partial(
-        optimizer.init,
-        fn=batch_objective,
-        options=options,
-        f_struct=f_struct,
-        aux_struct=None,
-        tags=tags,
-    )
-    step = eqx.Partial(optimizer.step, fn=batch_objective, options=options, tags=tags)
-    terminate = eqx.Partial(
-        optimizer.terminate, fn=batch_objective, options=options, tags=tags
-    )
-    postprocess = eqx.Partial(
-        optimizer.postprocess, fn=batch_objective, options=options, tags=tags
+    model = create_model(jax.random.split(key, num_seeds))
+    init, step, terminate, postprocess = create_optimizer(
+        num_steps=num_epochs * num_batches
     )
 
     X, y = train_images[:batch_size], train_labels[:batch_size]
     params, static = eqx.partition(model, eqx.is_array)
-    state = init(y=params, args=(static, X, y))
-    done, result = terminate(y=params, args=(static, X, y), state=state)
+    state = init(params, static, X, y)
+    done, result = terminate(params, static, X, y, state)
 
+    loss, _ = eqx.filter_vmap(batch_objective, in_axes=(0, None))(
+        params, (static, X, y)
+    )
+    model = eqx.combine(params, static)
+    pred_y = predict(model, test_images)
+    test_error = 1 - jax.vmap(accuracy, in_axes=(0, None))(pred_y, test_labels)
+    loss_mean, loss_std = loss.mean(), loss.std()
+    error_mean, error_std = test_error.mean(), test_error.std()
+    print(
+        f"Epoch 0\t\ttrain loss: {loss_mean:.3g} ± {loss_std:.3g}\ttest error: {error_mean*100:.4g}%"
+    )
+
+    epoch = 0
     for epoch in range(1, num_epochs + 1):
         for _ in range(num_batches):
             X, y = next(batches)
-            params, state, _ = step(y=params, args=(static, X, y), state=state)
-            done, result = terminate(y=params, args=(static, X, y), state=state)
-            loss, _ = batch_objective(params, (static, X, y))
+            params, state, _ = step(params, static, X, y, state)
+            done, result = terminate(params, static, X, y, state)
 
-        print(f"Epoch {epoch}, train loss: {loss:.3g}")
+        loss, _ = eqx.filter_vmap(batch_objective, in_axes=(0, None))(
+            params, (static, X, y)
+        )
+        print(f"Epoch {epoch}\t\ttrain loss: {loss.mean():.3g} ± {loss.std():.3g}")
 
     model = eqx.combine(params, static)
-    pred_y = eqx.filter_vmap(model)(test_images)
-    test_error = 1 - accuracy(pred_y, test_labels)
-    print(f"Epoch {epoch}, train loss: {loss:.3g}, test error: {test_error*100:.3g}%")
+    pred_y = predict(model, test_images)
+    test_error = 1 - jax.vmap(accuracy, in_axes=(0, None))(pred_y, test_labels)
+    loss_mean, loss_std = loss.mean(), loss.std()
+    error_mean, error_std = test_error.mean(), test_error.std()
+    print(
+        f"Epoch {epoch}\t\ttrain loss: {loss_mean:.3g} ± {loss_std:.3g}\ttest error: {error_mean*100:.4g}%"
+    )
 
     if result != optx.RESULTS.successful:
         print("Optimization failed!")
 
-    params, _, _ = postprocess(
-        y=params, aux=None, args=(static, X, y), state=state, result=result
-    )
+    params, _, _ = postprocess(params, static, X, y, state, result)
     model = eqx.combine(params, static)
     return model
 
