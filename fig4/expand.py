@@ -45,8 +45,12 @@ def add_random_zero_neurons(
     zero_w_in = jnp.repeat(zero_w_in, num_zero_groups * neurons_per_group, axis=0)
 
     zero_w_out = jnp.zeros((w_out.shape[0], num_zero_groups * neurons_per_group))
-    group_weights = jnp.array([1.0, -1.0] + [0.0] * (neurons_per_group - 2))
-    zero_w_out = jnp.tile(group_weights, (out_dim, num_zero_groups))
+
+    if neurons_per_group > 1:
+        raise NotImplementedError("neurons_per_group > 1 not yet implemented.")
+    # TODO: Counterbalance within groups.
+    # group_weights = jnp.array([1.0, -1.0] + [0.0] * (neurons_per_group - 2))
+    # zero_w_out = jnp.tile(group_weights, (out_dim, num_zero_groups))
 
     new_w_in = jnp.concatenate([w_in, zero_w_in], axis=0)
     new_w_out = jnp.concatenate([w_out, zero_w_out], axis=1)
