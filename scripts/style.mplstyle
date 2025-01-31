@@ -1,0 +1,91 @@
+# ***************************************************************************
+# * FONT                                                                    *
+# ***************************************************************************
+
+font.sans-serif: Arial
+
+
+# ***************************************************************************
+# * AXES                                                                    *
+# ***************************************************************************
+
+axes.facecolor:     None
+axes.linewidth: 1.1
+axes.titlesize: 11
+axes.titlepad: 5
+
+axes.labelpad:      2.0
+
+axes.spines.left:   True
+axes.spines.bottom: True
+axes.spines.top:    False
+axes.spines.right:  False
+
+axes.prop_cycle: cycler('color', ['55b2e8', 'cc78a6', '009e73', 'efe440', 'd65c00', '0071b2', 'e59c00', '000000'])
+
+axes.xmargin:   0
+axes.ymargin:   0.07
+
+
+## ***************************************************************************
+## * IMAGES                                                                  *
+## ***************************************************************************
+
+image.cmap:            cividis
+
+
+# ***************************************************************************
+# * TICKS                                                                   *
+# ***************************************************************************
+
+xtick.major.size:    4.5
+xtick.minor.size:    2.6
+xtick.major.width:   1.1
+xtick.minor.width:   0.8
+xtick.major.pad:     2.5
+
+
+ytick.major.size:    4.5
+ytick.minor.size:    2.6
+ytick.major.width:   1.1
+ytick.minor.width:   0.8
+ytick.major.pad:     2.5
+
+
+## ***************************************************************************
+## * LEGEND                                                                  *
+## ***************************************************************************
+
+legend.frameon:       False
+legend.fancybox:      False
+
+legend.shadow:        False
+legend.markerscale:   0.7
+legend.fontsize:      small
+legend.title_fontsize: small
+
+legend.borderpad:     0.5
+legend.labelspacing:  0.25
+legend.handlelength:  0.8
+legend.borderaxespad: 0.4
+legend.handletextpad: 0.4
+legend.labelcolor:    "#444444"
+
+
+
+# ***************************************************************************
+# * FIGURE                                                                  *
+# ***************************************************************************
+
+figure.figsize:     1.6, 1.6
+figure.dpi:         150
+
+figure.constrained_layout.use: True
+
+
+# ***************************************************************************
+# * SAVING FIGURES                                                          *
+# ***************************************************************************
+#savefig.facecolor: white
+#savefig.edgecolor: white 
+
