@@ -9,8 +9,9 @@ from crossval import kfold_op
 from regression import RegressionSolver
 
 
+@partial(jax.jit, static_argnums=(2, 3))
 def solve_softmax(
-    x: Array, y: Array, max_iter: int = 100, lr: float = 0.1
+    x: Array, y: Array, max_iter: int = 200, lr: float = 0.2
 ) -> tuple[Array, Array]:
     """Solve softmax regression using gradient descent for both coefficients and intercept."""
 
@@ -27,7 +28,6 @@ def solve_softmax(
         probs = softmax(logits)
         return -jnp.mean(jnp.sum(y * jnp.log(probs + 1e-10), axis=1))
 
-    # Gradient descent loop
     for _ in range(max_iter):
         grads = jax.grad(loss)((beta, intercept))
         grad_beta, grad_intercept = grads
