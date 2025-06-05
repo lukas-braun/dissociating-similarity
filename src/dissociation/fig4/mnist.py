@@ -12,6 +12,9 @@ import optax
 import numpy as np
 from functools import partial
 
+import certifi
+import ssl
+
 
 _DATA = "/tmp/jax_example_data/"
 
@@ -22,7 +25,12 @@ def _download(url, filename):
         os.makedirs(_DATA)
     out_file = path.join(_DATA, filename)
     if not path.isfile(out_file):
-        urllib.request.urlretrieve(url, out_file)
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+        with urllib.request.urlopen(url, context=ssl_context) as response:
+            with open(out_file, "wb") as f:
+                f.write(response.read())
+
         print(f"downloaded {url} to {_DATA}")
 
 
