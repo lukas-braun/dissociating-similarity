@@ -13,11 +13,17 @@ cd dissociation/
 
 # Install dependencies.
 uv sync
+
+# Install the package.
+uv pip install -p $(<.python-version) -e .
 ```
 
 ## Usage
 
 ```bash
+# Install a Jupyter kernel for this project.
+uv run ipython kernel install --user --env VIRTUAL_ENV $(pwd)/.venv --name=dissociation
+
 # Explore notebooks to reproduce figures from the paper.
 uv run --with jupyter jupyter lab --notebook-dir=notebooks
 ```
