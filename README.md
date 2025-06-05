@@ -19,7 +19,7 @@ uv sync
 
 ```bash
 # Explore notebooks to reproduce figures from the paper.
-uv run --with jupyter jupyter lab
+uv run --with jupyter jupyter lab --notebook-dir=notebooks
 ```
 
 ## Requirements
