@@ -45,7 +45,7 @@ uv run --with jupyter jupyter lab --notebook-dir=notebooks
     year={2025},
     month={July},
     series={Proceedings of Machine Learning Research},
-    publisher={PMLR}
+    publisher={PMLR},
     editor={Singh, Aarti and Fazel, Maryam and Hsu, Daniel and Lacoste-Julien, Simon and Smith, Virginia and Berkenkamp, Felix and Maharaj, Tegan}
 }
 ```
