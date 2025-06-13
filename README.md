@@ -46,6 +46,6 @@ uv run --with jupyter jupyter lab --notebook-dir=notebooks
     month={July},
     series={Proceedings of Machine Learning Research},
     publisher={PMLR}
-    editor={Singh, Aarti and Fazel, Maryam and Hsu, Daniel and Lacoste-Julien, Simon and Smith, Virginia and Berkenkamp, Felix and Maharaj, Tegan},
+    editor={Singh, Aarti and Fazel, Maryam and Hsu, Daniel and Lacoste-Julien, Simon and Smith, Virginia and Berkenkamp, Felix and Maharaj, Tegan}
 }
 ```
