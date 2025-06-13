@@ -1,6 +1,6 @@
 # dissociation
 
-Code to reproduce figures from our ICML 2025 paper "[Not all solutions are created equal: An analytical dissociation of functional and representational similarity in deep linear neural networks](#citation)".
+Code to reproduce figures from our ICML 2025 paper "[Not all solutions are created equal: An analytical dissociation of functional and representational similarity in deep linear neural networks](#citation)."
 
 ## Setup
 
