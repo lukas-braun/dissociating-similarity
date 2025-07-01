@@ -3,6 +3,7 @@
 # ***************************************************************************
 
 font.sans-serif: Arial
+mathtext.fontset: cm
 
 
 # ***************************************************************************
@@ -10,9 +11,9 @@ font.sans-serif: Arial
 # ***************************************************************************
 
 axes.facecolor:     None
-axes.linewidth: 1.1
+axes.linewidth: 0.8
 axes.titlesize: 11
-axes.titlepad: 5
+axes.titlepad: 3
 
 axes.labelpad:      2.0
 
@@ -21,9 +22,9 @@ axes.spines.bottom: True
 axes.spines.top:    False
 axes.spines.right:  False
 
-axes.prop_cycle: cycler('color', ['55b2e8', 'cc78a6', '009e73', 'efe440', 'd65c00', '0071b2', 'e59c00', '000000'])
+axes.prop_cycle: cycler('color', ['0071b2', 'd65c00', '009e73', 'efe440', 'cc78a6', '55b2e8', 'e59c00', '000000'])
 
-axes.xmargin:   0
+axes.xmargin:   0.07
 axes.ymargin:   0.07
 
 
@@ -31,7 +32,7 @@ axes.ymargin:   0.07
 ## * IMAGES                                                                  *
 ## ***************************************************************************
 
-image.cmap:            cividis
+image.cmap:            "pretty"
 
 
 # ***************************************************************************
@@ -64,12 +65,12 @@ legend.markerscale:   0.7
 legend.fontsize:      small
 legend.title_fontsize: small
 
-legend.borderpad:     0.5
-legend.labelspacing:  0.25
+legend.borderpad:     0.2
+legend.labelspacing:  0.2
 legend.handlelength:  0.8
-legend.borderaxespad: 0.4
-legend.handletextpad: 0.4
-legend.labelcolor:    "#444444"
+legend.borderaxespad: 0.3
+legend.handletextpad: 0.3
+legend.labelcolor:    "#222222"
 
 
 
