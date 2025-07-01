@@ -13,7 +13,7 @@ dependencies = [
     # No more `jaxlib` support for Intel Macs.
     "jaxlib>=0.4,<0.5 ; sys_platform == 'darwin' and platform_machine == 'x86_64'",
     # Latest versions on Apple Silicon, Windows
-    "jaxlib>=0.6.1 ; (sys_platform != 'darwin' or platform_machine != 'x86_64')",
+    "jaxlib>=0.6.1 ; sys_platform != 'darwin' or platform_machine != 'x86_64'",
     "jaxtyping>=0.3.2",
     "matplotlib>=3.10.3",
     "optax>=0.2.4",
