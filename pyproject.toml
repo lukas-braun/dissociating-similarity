@@ -19,6 +19,8 @@ dependencies = [
     "optax>=0.2.4",
     "optimistix>=0.0.10",
     "treescope>=0.1.9",
+    "imageio>=2.37.0",
+    "networkx>=3.5",
 ]
 
 [build-system]
