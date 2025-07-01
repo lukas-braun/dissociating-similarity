@@ -14,8 +14,8 @@ cd dissociation/
 # Install dependencies.
 uv sync
 
-# Install the package.
-uv pip install -p $(<.python-version) -e .
+# Activate the environment to be able to use `python ...` in addition to `uv ...` within the same environment.
+source .venv/bin/activate
 ```
 
 ## Usage
