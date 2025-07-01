@@ -8,7 +8,7 @@ dependencies = [
     "equinox>=0.12.2",
     # GPU on Linux.
     "jax[cuda12]>=0.4.29 ; sys_platform == 'linux'",
-    "nvidia-cublas-cu12>=12.9.0.13",  # https://github.com/jax-ml/jax/issues/29042 
+    "nvidia-cublas-cu12>=12.9.0.13", # https://github.com/jax-ml/jax/issues/29042
     # CPU everywhere else.
     "jax>=0.4.29 ; sys_platform != 'linux'",
     # No more `jaxlib` support for Intel Macs.
@@ -22,6 +22,7 @@ dependencies = [
     "treescope>=0.1.9",
     "imageio>=2.37.0",
     "networkx>=3.5",
+    "scikit-learn>=1.7.0",
 ]
 
 [build-system]
