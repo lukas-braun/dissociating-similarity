@@ -15,6 +15,7 @@ from .main import (
 )
 from .dataloader import load_mnist
 from .colourblind import sequential, diverging
+from .plotting import create_hierarchical_graph
 
 __all__ = [
     "RNGKey",
@@ -33,4 +34,5 @@ __all__ = [
     "walk_mrns",
     "sequential",
     "diverging",
+    "create_hierarchical_graph",
 ]
