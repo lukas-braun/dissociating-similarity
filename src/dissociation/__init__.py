@@ -1,25 +1,24 @@
 from .main import (
-    RNGKey,
-    sample_weights,
-    random_regression_task,
+    #RNGKey,
+    #sample_weights,
+    # random_regression_task,
     input_noise_sensitivity,
     compact_svd,
     input_noise_sensitivity_theory,
     parameter_noise_sensitivity,
     parameter_noise_sensitivity_theory,
     noise_sensitivity,
-    walk_gls,
-    walk_lss,
-    walk_mwns,
-    walk_mrns,
 )
+
+from .utils import random_regression_task
+from .walks import walk_gls, walk_lss, walk_mrns, walk_mwns
 from .dataloader import load_mnist
 from .colourblind import sequential, diverging
 from .plotting import create_hierarchical_graph
 
 __all__ = [
-    "RNGKey",
-    "sample_weights",
+    #"RNGKey",
+    #"sample_weights",
     "load_mnist",
     "random_regression_task",
     "input_noise_sensitivity",
@@ -30,8 +29,8 @@ __all__ = [
     "noise_sensitivity",
     "walk_gls",
     "walk_lss",
-    "walk_mwns",
     "walk_mrns",
+    "walk_mwns",
     "sequential",
     "diverging",
     "create_hierarchical_graph",
