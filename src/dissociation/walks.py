@@ -57,7 +57,9 @@ def walk_lss(rng, xs, ys, hidden_dim, steps, alpha=5e-3):
     a, _, _ = jitable_compact_svd(xs)
     pr = v @ v.T
     pi = a @ a.T - v @ v.T
+    pi = np.where(np.abs(pi) < 1e-3, 0., pi)
     pu = np.identity(in_dim) - a @ a.T
+    pu = np.where(np.abs(pu) < 1e-3, 0., pu)
 
     def step(carry, _):
         w1, w2, rng = carry
@@ -68,7 +70,8 @@ def walk_lss(rng, xs, ys, hidden_dim, steps, alpha=5e-3):
 
         def condition(state, threshold=1e-6):
             w1, w2 = state
-            return np.linalg.norm(w2 @ w1 @ xs - ys, ord="fro")**2 > threshold
+            loss = w2 @ w1 @ xs @ xs.T - ys @ xs.T
+            return np.linalg.norm(loss, ord="fro")**2 > threshold
 
         def gd(state, lr=0.2):
             w1, w2 = state
