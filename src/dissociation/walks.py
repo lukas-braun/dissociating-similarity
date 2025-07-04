@@ -24,9 +24,10 @@ def walk_gls(rng, xs, ys, hidden_dim, steps, alpha=5e-3):
 
         def condition(state, threshold=1e-6):
             w1, w2 = state
-            return np.linalg.norm(w2 @ w1 @ xs - ys, ord="fro")**2 > threshold
+            loss = w2 @ w1 @ xs @ xs.T - ys @ xs.T
+            return np.linalg.norm(loss, ord="fro")**2 > threshold
 
-        def gd(state, lr=0.2):
+        def gd(state, lr=0.15):
             w1, w2 = state
             loss = 1. / n * (w2 @ w1 @ xs - ys) @ xs.T
             dw1 = w2.T @ loss
@@ -73,7 +74,7 @@ def walk_lss(rng, xs, ys, hidden_dim, steps, alpha=5e-3):
             loss = w2 @ w1 @ xs @ xs.T - ys @ xs.T
             return np.linalg.norm(loss, ord="fro")**2 > threshold
 
-        def gd(state, lr=0.2):
+        def gd(state, lr=0.15):
             w1, w2 = state
             loss = 1. / n * (w2 @ w1 @ xs - ys) @ xs.T
             dw1 = w2.T @ loss
