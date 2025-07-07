@@ -21,6 +21,7 @@ def jitable_compact_svd(a, threshold=1e-6):
     mask = s > threshold
     return u * mask, np.diag(s * mask), vt.T * mask
 
+
 def compact_svd(a, threshold=1e-6):
     u, s, vt = np.linalg.svd(a, False)
     mask = s > threshold
